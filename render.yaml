@@ -18,7 +18,7 @@ services:
       - key: DJANGO_DEBUG
         value: false
       - key: ALLOWED_HOSTS
-        value: ".onrender.com"
+        value: "crm-test-1-wphx.onrender.com,.onrender.com,localhost,127.0.0.1"
 
 databases:
   - name: crm-db
