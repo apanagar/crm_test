@@ -4,6 +4,10 @@ services:
     env: python
     buildCommand: chmod +x build.sh && ./build.sh
     startCommand: gunicorn salesforce_clone.wsgi:application
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0

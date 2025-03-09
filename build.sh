@@ -5,12 +5,17 @@ set -o errexit
 # Install dependencies
 pip install -r requirements.txt
 
+# Create database directory if it doesn't exist
+mkdir -p /opt/render/project/src/data
+
 # Make migrations
 echo "Creating migrations..."
 python manage.py makemigrations
 
 # Run migrations
 echo "Applying migrations..."
+SQLITE_PATH=/opt/render/project/src/data/db.sqlite3
+export SQLITE_PATH
 python manage.py migrate --noinput
 
 # Collect static files

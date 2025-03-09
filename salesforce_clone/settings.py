@@ -86,15 +86,19 @@ WSGI_APPLICATION = 'salesforce_clone.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Use persistent SQLite path if provided, otherwise use default
+SQLITE_PATH = os.getenv('SQLITE_PATH', str(BASE_DIR / 'db.sqlite3'))
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': SQLITE_PATH,
     }
 }
 
 if DEBUG:
     print(f"Database configuration: {DATABASES['default']}")
+    print(f"Using SQLite database at: {SQLITE_PATH}")
 
 
 # Password validation
