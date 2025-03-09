@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from . import views
+from .auth_views import DebugLoginView
 
 app_name = 'crm'
 
@@ -27,7 +28,7 @@ router.register(r'approval-requests', views.ApprovalRequestViewSet)
 
 # Authentication URLs
 urlpatterns = [
-    path('accounts/login/', auth_views.LoginView.as_view(template_name='crm/auth/login.html'), name='login'),
+    path('accounts/login/', DebugLoginView.as_view(template_name='crm/auth/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='crm:login'), name='logout'),
 ]
 
