@@ -5,47 +5,25 @@ set -o errexit
 # Install dependencies
 pip install -r requirements.txt
 
-# Wait for PostgreSQL to be ready
-echo "Waiting for PostgreSQL..."
+# Verify database configuration
+echo "Verifying database configuration..."
 python << END
-import sys
-import time
-import psycopg2
-from urllib.parse import urlparse
 import os
+import sys
 import dj_database_url
 
-# Get database configuration
-db_config = dj_database_url.config()
-if not db_config:
-    print("Error: DATABASE_URL not configured")
-    sys.exit(1)
-
-# Extract connection details
-dbname = db_config.get('NAME')
-user = db_config.get('USER')
-password = db_config.get('PASSWORD')
-host = db_config.get('HOST')
-port = db_config.get('PORT', 5432)
-
-print(f"Attempting to connect to PostgreSQL at {host}...")
-
-# Wait for database to be ready
-while True:
-    try:
-        conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-        conn.close()
-        print("PostgreSQL is ready!")
-        break
-    except psycopg2.OperationalError as e:
-        print(f"PostgreSQL is not ready yet: {e}")
-        time.sleep(1)
+print("Checking DATABASE_URL...")
+database_url = os.environ.get('DATABASE_URL', '')
+if database_url:
+    print(f"DATABASE_URL exists (first 20 chars): {database_url[:20]}...")
+    config = dj_database_url.config()
+    print("Database config:", config)
+    if not config:
+        print("Error: Could not parse DATABASE_URL")
+        sys.exit(1)
+    print("Database configuration is valid")
+else:
+    print("No DATABASE_URL found, will use SQLite")
 END
 
 # Make migrations
@@ -55,6 +33,24 @@ python manage.py makemigrations
 # Apply migrations
 echo "Applying migrations..."
 python manage.py migrate --noinput
+
+# Verify database tables
+echo "Verifying database tables..."
+python << END
+import django
+from django.db import connection
+
+django.setup()
+
+with connection.cursor() as cursor:
+    cursor.execute("""
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public'
+    """)
+    tables = cursor.fetchall()
+    print("Available tables:", [table[0] for table in tables])
+END
 
 # Collect static files
 echo "Collecting static files..."
@@ -71,9 +67,22 @@ python << END
 import os
 import django
 from django.contrib.auth import get_user_model
+from django.db import connection
 
 django.setup()
 User = get_user_model()
+
+# First verify the auth_user table exists
+with connection.cursor() as cursor:
+    cursor.execute("""
+        SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = 'auth_user'
+        );
+    """)
+    table_exists = cursor.fetchone()[0]
+    print(f"auth_user table exists: {table_exists}")
 
 username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
 password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'Admin123!@#')
@@ -83,11 +92,12 @@ try:
     user = User.objects.create_superuser(username=username, email=email, password=password)
     print('Superuser created successfully')
 except Exception as e:
+    print(f'Error creating superuser: {e}')
     try:
         user = User.objects.get(username=username)
         user.set_password(password)
         user.save()
         print('Superuser password updated successfully')
     except Exception as e:
-        print(f'Error handling superuser: {e}')
+        print(f'Error updating superuser: {e}')
 END 

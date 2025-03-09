@@ -16,7 +16,7 @@ services:
       - key: DJANGO_SECRET_KEY
         generateValue: true
       - key: DJANGO_DEBUG
-        value: true
+        value: "True"
       - key: ALLOWED_HOSTS
         value: "crm-test-1-wphx.onrender.com,.onrender.com,localhost,127.0.0.1"
       - key: DJANGO_SUPERUSER_EMAIL
@@ -30,4 +30,5 @@ databases:
   - name: crm-db
     databaseName: crm
     user: crm_user
+    ipAllowList: []  # optional (allows all IPs by default)
     plan: free

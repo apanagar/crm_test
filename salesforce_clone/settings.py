@@ -86,15 +86,30 @@ WSGI_APPLICATION = 'salesforce_clone.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+print("DEBUG: Checking database configuration...")
+print(f"DEBUG: DATABASE_URL environment variable exists: {'DATABASE_URL' in os.environ}")
+if 'DATABASE_URL' in os.environ:
+    print(f"DEBUG: DATABASE_URL value (first 20 chars): {os.environ['DATABASE_URL'][:20]}...")
+
+# Default SQLite configuration
+default_db = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
 }
 
+# Try to get PostgreSQL configuration
+db_config = dj_database_url.config(default=None)
+print(f"DEBUG: dj_database_url config: {db_config}")
+
+if db_config:
+    print("Using PostgreSQL configuration from DATABASE_URL")
+    DATABASES = {'default': db_config}
+else:
+    print("Using default SQLite configuration")
+    DATABASES = {'default': default_db}
+
 if DEBUG:
-    print(f"Database configuration: {DATABASES['default']}")
+    print(f"Final Database configuration: {DATABASES['default']}")
 
 
 # Password validation
