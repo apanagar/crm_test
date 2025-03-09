@@ -1,4 +1,6 @@
+from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from . import views
 
@@ -23,8 +25,14 @@ router.register(r'approval-processes', views.ApprovalProcessViewSet)
 router.register(r'approval-steps', views.ApprovalStepViewSet)
 router.register(r'approval-requests', views.ApprovalRequestViewSet)
 
-# Template-based URLs
+# Authentication URLs
 urlpatterns = [
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='crm/auth/login.html'), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='crm:login'), name='logout'),
+]
+
+# CRM URLs
+urlpatterns += [
     # Dashboard
     path('', views.dashboard, name='dashboard'),
     
@@ -41,7 +49,10 @@ urlpatterns = [
     
     # Opportunities
     path('opportunities/intake/', views.opportunity_intake, name='opportunity_intake'),
-    
-    # API endpoints
+]
+
+# API URLs
+urlpatterns += [
     path('api/', include(router.urls)),
+    path('api/', include('crm.api_urls')),
 ] 

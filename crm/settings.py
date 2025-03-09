@@ -133,4 +133,9 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    X_FRAME_OPTIONS = 'DENY' 
+    X_FRAME_OPTIONS = 'DENY'
+
+# Authentication settings
+LOGIN_URL = 'crm:login'
+LOGIN_REDIRECT_URL = 'crm:dashboard'
+LOGOUT_REDIRECT_URL = 'crm:login' 
