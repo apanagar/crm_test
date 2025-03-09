@@ -24,7 +24,7 @@ services:
       - key: DJANGO_SUPERUSER_USERNAME
         value: "admin"
       - key: DJANGO_SUPERUSER_PASSWORD
-        generateValue: true
+        value: "asdf"
 
 databases:
   - name: crm-db
