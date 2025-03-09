@@ -1,1 +1,1 @@
-web: gunicorn salesforce_clone.wsgi:application 
+web: PYTHONPATH=/opt/render/project/src gunicorn salesforce_clone.wsgi:application 
