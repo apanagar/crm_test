@@ -1,0 +1,1 @@
+web: gunicorn salesforce_clone.wsgi:application 

@@ -1,0 +1,194 @@
+{% extends 'crm/base/base.html' %}
+
+{% block title %}{{ form_title }} - Salesforce Clone{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ form_title }}</h1>
+    <a href="{% url 'crm:account_list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Back to Accounts
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row g-3">
+                <!-- Account Name -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_name" class="form-label">Account Name *</label>
+                        <input type="text" 
+                               name="name" 
+                               id="id_name" 
+                               class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                               value="{{ form.name.value|default:'' }}"
+                               required>
+                        {% if form.name.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.name.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Industry -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_industry" class="form-label">Industry</label>
+                        <select name="industry" 
+                                id="id_industry" 
+                                class="form-select {% if form.industry.errors %}is-invalid{% endif %}">
+                            <option value="">-- Select Industry --</option>
+                            <option value="technology" {% if form.industry.value == 'technology' %}selected{% endif %}>Technology</option>
+                            <option value="finance" {% if form.industry.value == 'finance' %}selected{% endif %}>Finance</option>
+                            <option value="healthcare" {% if form.industry.value == 'healthcare' %}selected{% endif %}>Healthcare</option>
+                            <option value="retail" {% if form.industry.value == 'retail' %}selected{% endif %}>Retail</option>
+                            <option value="manufacturing" {% if form.industry.value == 'manufacturing' %}selected{% endif %}>Manufacturing</option>
+                            <option value="other" {% if form.industry.value == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                        {% if form.industry.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.industry.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Phone -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_phone" class="form-label">Phone</label>
+                        <input type="tel" 
+                               name="phone" 
+                               id="id_phone" 
+                               class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+                               value="{{ form.phone.value|default:'' }}">
+                        {% if form.phone.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.phone.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Website -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_website" class="form-label">Website</label>
+                        <input type="url" 
+                               name="website" 
+                               id="id_website" 
+                               class="form-control {% if form.website.errors %}is-invalid{% endif %}"
+                               value="{{ form.website.value|default:'' }}"
+                               placeholder="https://">
+                        {% if form.website.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.website.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Annual Revenue -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_annual_revenue" class="form-label">Annual Revenue</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="number" 
+                                   name="annual_revenue" 
+                                   id="id_annual_revenue" 
+                                   class="form-control {% if form.annual_revenue.errors %}is-invalid{% endif %}"
+                                   value="{{ form.annual_revenue.value|default:'' }}"
+                                   step="0.01"
+                                   min="0">
+                        </div>
+                        {% if form.annual_revenue.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.annual_revenue.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="id_description" class="form-label">Description</label>
+                        <textarea name="description" 
+                                  id="id_description" 
+                                  class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                  rows="4">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.description.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Billing Address -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_billing_address" class="form-label">Billing Address</label>
+                        <textarea name="billing_address" 
+                                  id="id_billing_address" 
+                                  class="form-control {% if form.billing_address.errors %}is-invalid{% endif %}"
+                                  rows="3">{{ form.billing_address.value|default:'' }}</textarea>
+                        {% if form.billing_address.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.billing_address.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="id_shipping_address" class="form-label">Shipping Address</label>
+                        <textarea name="shipping_address" 
+                                  id="id_shipping_address" 
+                                  class="form-control {% if form.shipping_address.errors %}is-invalid{% endif %}"
+                                  rows="3">{{ form.shipping_address.value|default:'' }}</textarea>
+                        {% if form.shipping_address.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.shipping_address.errors|join:", " }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-1"></i> Save Account
+                </button>
+                <a href="{% url 'crm:account_list' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %} 

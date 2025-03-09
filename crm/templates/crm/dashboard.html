@@ -1,0 +1,202 @@
+{% extends 'crm/base/base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard - Salesforce Clone{% endblock %}
+
+{% block extra_css %}
+<style>
+    .metric-card {
+        transition: transform 0.2s;
+    }
+    .metric-card:hover {
+        transform: translateY(-5px);
+    }
+    .funnel-chart {
+        height: 400px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Metrics Row -->
+    <div class="row mb-4">
+        <!-- Accounts Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Accounts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_accounts }}</div>
+                            <div class="text-xs text-muted mt-1">
+                                {{ new_accounts_count }} new this month
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-building fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Opportunities Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2 metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Open Opportunities</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">${{ total_opportunity_value|floatformat:0|intcomma }}</div>
+                            <div class="text-xs text-muted mt-1">
+                                {{ open_opportunities_count }} opportunities
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leads Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2 metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Active Leads</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_leads_count }}</div>
+                            <div class="text-xs text-muted mt-1">
+                                {{ converted_leads_count }} converted this month
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-plus fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2 metric-card">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Tasks Due Today</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ tasks_due_count }}</div>
+                            <div class="text-xs text-muted mt-1">
+                                {{ overdue_tasks_count }} overdue tasks
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Sales Funnel -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Sales Funnel</h6>
+                </div>
+                <div class="card-body">
+                    <div class="funnel-chart" id="salesFunnel"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        {% for activity in recent_activities %}
+                        <div class="timeline-item mb-3">
+                            <div class="timeline-title text-primary">{{ activity.title }}</div>
+                            <div class="timeline-body text-muted">{{ activity.description }}</div>
+                            <div class="timeline-date small text-muted">{{ activity.timestamp|date:"M d, Y H:i" }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<script>
+    // Sales Funnel Chart
+    const funnelStages = {{ funnel_stages|safe }};
+    const funnelCounts = {{ funnel_counts|safe }};
+    const funnelValues = {{ funnel_values|safe }};
+
+    const funnelData = [{
+        type: 'funnel',
+        y: funnelStages,
+        x: funnelCounts,
+        textinfo: "value+percent initial",
+        textposition: "inside",
+        hovertemplate: "<b>%{y}</b><br>" +
+                      "Count: %{x}<br>" +
+                      "Value: $%{customdata:,.2f}<br>" +
+                      "<extra></extra>",
+        customdata: funnelValues,
+        marker: {
+            color: [
+                '#4e73df',
+                '#2e59d9',
+                '#224abe',
+                '#1e429f',
+                '#1a3a87',
+                '#17326f'
+            ]
+        }
+    }];
+
+    const funnelLayout = {
+        margin: { l: 150, r: 0, t: 20, b: 0 },
+        width: null,  // Responsive width
+        height: 400,
+        funnelmode: "stack",
+        showlegend: false,
+        font: {
+            family: 'Nunito, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+        }
+    };
+
+    const config = {
+        responsive: true,
+        displayModeBar: false
+    };
+
+    Plotly.newPlot('salesFunnel', funnelData, funnelLayout, config);
+
+    // Make the chart responsive
+    window.addEventListener('resize', function() {
+        Plotly.relayout('salesFunnel', {
+            width: document.getElementById('salesFunnel').clientWidth
+        });
+    });
+</script>
+{% endblock %} 

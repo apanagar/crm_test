@@ -1,0 +1,128 @@
+{% extends 'crm/base/base.html' %}
+
+{% block title %}{{ form_title }} - Salesforce Clone{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">{{ form_title }}</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name *</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ form.first_name.value|default:'' }}" required>
+                        <div class="invalid-feedback">Please provide a first name.</div>
+                        {% if form.first_name.errors %}
+                        <div class="text-danger">{{ form.first_name.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name *</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ form.last_name.value|default:'' }}" required>
+                        <div class="invalid-feedback">Please provide a last name.</div>
+                        {% if form.last_name.errors %}
+                        <div class="text-danger">{{ form.last_name.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ form.email.value|default:'' }}" required>
+                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                        {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ form.phone.value|default:'' }}">
+                        {% if form.phone.errors %}
+                        <div class="text-danger">{{ form.phone.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ form.title.value|default:'' }}">
+                        {% if form.title.errors %}
+                        <div class="text-danger">{{ form.title.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="account" class="form-label">Account *</label>
+                        <select class="form-select" id="account" name="account" required {% if account %}disabled{% endif %}>
+                            {% if account %}
+                            <option value="{{ account.id }}" selected>{{ account.name }}</option>
+                            {% else %}
+                            <option value="">Select an account...</option>
+                            {% for acc in accounts %}
+                            <option value="{{ acc.id }}" {% if acc.id == form.account.value %}selected{% endif %}>{{ acc.name }}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                        {% if account %}
+                        <input type="hidden" name="account" value="{{ account.id }}">
+                        {% endif %}
+                        <div class="invalid-feedback">Please select an account.</div>
+                        {% if form.account.errors %}
+                        <div class="text-danger">{{ form.account.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ form.description.value|default:'' }}</textarea>
+                {% if form.description.errors %}
+                <div class="text-danger">{{ form.description.errors|join:", " }}</div>
+                {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Contact</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %} 

@@ -1,0 +1,181 @@
+{% extends 'crm/base/base.html' %}
+
+{% block title %}Sales Opportunity Intake - Salesforce Clone{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3">Sales Opportunity Intake</h1>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <h5 class="mb-4">Basic Information</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="opportunity_name" class="form-label">Opportunity Name *</label>
+                        <input type="text" class="form-control" id="opportunity_name" name="opportunity_name" required>
+                        <div class="invalid-feedback">Please provide an opportunity name.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Expected Amount ($) *</label>
+                        <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+                        <div class="invalid-feedback">Please provide an expected amount.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="close_date" class="form-label">Expected Close Date *</label>
+                        <input type="date" class="form-control" id="close_date" name="close_date" required>
+                        <div class="invalid-feedback">Please provide an expected close date.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="stage" class="form-label">Stage *</label>
+                        <select class="form-select" id="stage" name="stage" required>
+                            <option value="">Select a stage...</option>
+                            <option value="prospecting">Prospecting</option>
+                            <option value="qualification">Qualification</option>
+                            <option value="needs_analysis">Needs Analysis</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="negotiation">Negotiation</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a stage.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="probability" class="form-label">Probability (%) *</label>
+                        <input type="number" class="form-control" id="probability" name="probability" min="0" max="100" required>
+                        <div class="invalid-feedback">Please provide a probability between 0 and 100.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="source" class="form-label">Lead Source</label>
+                        <select class="form-select" id="source" name="source">
+                            <option value="">Select a source...</option>
+                            <option value="web">Website</option>
+                            <option value="phone">Phone Inquiry</option>
+                            <option value="referral">Referral</option>
+                            <option value="trade_show">Trade Show</option>
+                            <option value="social_media">Social Media</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <h5 class="mb-4">Contact Information</h5>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="contact_name" class="form-label">Contact Name *</label>
+                        <input type="text" class="form-control" id="contact_name" name="contact_name" required>
+                        <div class="invalid-feedback">Please provide a contact name.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact_title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="contact_title" name="contact_title">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact_email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="contact_email" name="contact_email" required>
+                        <div class="invalid-feedback">Please provide a valid email address.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="contact_phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="contact_phone" name="contact_phone">
+                    </div>
+                    <div class="mb-3">
+                        <label for="company" class="form-label">Company Name *</label>
+                        <input type="text" class="form-control" id="company" name="company" required>
+                        <div class="invalid-feedback">Please provide a company name.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="industry" class="form-label">Industry</label>
+                        <select class="form-select" id="industry" name="industry">
+                            <option value="">Select an industry...</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="manufacturing">Manufacturing</option>
+                            <option value="retail">Retail</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <h5 class="mb-4">Additional Information</h5>
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="next_steps" class="form-label">Next Steps</label>
+                        <textarea class="form-control" id="next_steps" name="next_steps" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Products/Services Interested In</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="product1" name="products" value="product1">
+                            <label class="form-check-label" for="product1">Product 1</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="product2" name="products" value="product2">
+                            <label class="form-check-label" for="product2">Product 2</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="service1" name="products" value="service1">
+                            <label class="form-check-label" for="service1">Service 1</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Create Opportunity</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Auto-calculate probability based on stage
+    document.getElementById('stage').addEventListener('change', function() {
+        const probabilities = {
+            'prospecting': 10,
+            'qualification': 25,
+            'needs_analysis': 50,
+            'proposal': 75,
+            'negotiation': 90
+        };
+        const probability = probabilities[this.value] || '';
+        document.getElementById('probability').value = probability;
+    });
+</script>
+{% endblock %} 
