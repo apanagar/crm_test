@@ -24,10 +24,10 @@ services:
       - key: DJANGO_SUPERUSER_USERNAME
         value: "admin"
       - key: DJANGO_SUPERUSER_PASSWORD
-        value: "asdf"
+        value: "Admin123!@#"
 
 databases:
   - name: crm-db
     databaseName: crm
     user: crm_user
-    plan: free 
+    plan: free
