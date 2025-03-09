@@ -15,7 +15,14 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'your-local-secret-key-here')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Update ALLOWED_HOSTS to explicitly include Render domain
+ALLOWED_HOSTS = [
+    'crm-test-1-wphx.onrender.com',
+    '.onrender.com',
+    'localhost',
+    '127.0.0.1',
+    '*',  # Temporarily allow all hosts for debugging
+]
 
 # Application definition
 INSTALLED_APPS = [
